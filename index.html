@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Budgeasy — Gestion de dépenses étudiant</title>
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">BUDG<span class="accent">EASY</span></div>
+    <nav>
+      <button id="btnDemo">Demo</button>
+      <button id="btnAddTx" class="primary">+ Ajouter</button>
+      <button id="btnToggleView">Masquer montants</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section id="balance-card" class="card">
+      <h2>Solde du mois</h2>
+      <div class="big-amount" data-visible="true">0,00 €</div>
+      <div class="metrics">
+        <div class="metric">Dépenses: <span id="expense-month">0,00 €</span></div>
+        <div class="metric">Revenus: <span id="income-month">0,00 €</span></div>
+      </div>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <h3>Dépenses par catégorie</h3>
+        <canvas id="chartCategories" width="400" height="300"></canvas>
+      </div>
+      <div class="card">
+        <h3>Tendance (30j)</h3>
+        <canvas id="chartTrend" width="400" height="300"></canvas>
+      </div>
+    </section>
+
+    <section class="card" id="transactions-section">
+      <h3>Dernières transactions</h3>
+      <div id="tx-list"></div>
+      <div id="empty-transactions" class="empty">Aucune transaction pour le moment. <button id="empty-add">Ajouter une dépense</button></div>
+    </section>
+  </main>
+
+  <!-- Modal: add transaction -->
+  <div id="modalTx" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <h3 id="modalTitle">Nouvelle dépense</h3>
+      <form id="txForm">
+        <label>Type
+          <select name="type">
+            <option value="expense">Dépense</option>
+            <option value="income">Revenu</option>
+          </select>
+        </label>
+
+        <label>Montant
+          <input name="amount" type="number" step="0.01" placeholder="12.50" required />
+        </label>
+
+        <label>Date
+          <input name="date" type="date" required />
+        </label>
+
+        <label>Catégorie
+          <select name="category_id" id="categorySelect"></select>
+          <button type="button" id="btnNewCategory" class="link">+ Nouveau</button>
+        </label>
+
+        <label>Note
+          <input name="note" type="text" maxlength="140" placeholder="Ex: Pizza Uber" />
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="btnCancel">Annuler</button>
+          <button type="submit" class="primary">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
