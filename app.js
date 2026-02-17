@@ -1,11 +1,11 @@
-// app.js — frontend autonome (localStorage fallback)
+
 (function(){
   // Utils
   const $ = sel => document.querySelector(sel);
   const $all = sel => Array.from(document.querySelectorAll(sel));
   const LS_KEY = 'budgeasy_v1';
 
-  // Default categories
+
   const DEFAULT_CATS = [
     { id: 'c1', name: 'Nourriture', icon: 'icons/food.svg' },
     { id: 'c2', name: 'Transport', icon: 'icons/transport.svg' },
@@ -15,14 +15,13 @@
     { id: 'c6', name: 'Autres', icon: 'icons/other.svg' }
   ];
 
-  // State
+  
   let state = {
     categories: [],
     transactions: [],
     prefs: { currency: 'EUR', hideAmounts: false }
   };
 
-  // --- Persistence ---
   function loadState(){
     try{
       const raw = localStorage.getItem(LS_KEY);
@@ -36,7 +35,7 @@
 
   function initDefaults(){ state = { categories: DEFAULT_CATS, transactions: [], prefs:{currency:'EUR', hideAmounts:false} }; saveState(); }
 
-  // --- Render ---
+
   function formatMoney(n){
     const val = Number(n || 0).toFixed(2);
     return new Intl.NumberFormat('fr-FR',{style:'currency',currency:state.prefs.currency}).format(val);
@@ -75,10 +74,10 @@
     $('.big-amount') && ($('.big-amount').textContent = formatMoney(incomes - expenses));
   }
 
-  // Charts
+
   let chartCat=null, chartTrend=null;
   function renderCharts(){
-    // categories camembert
+   
     const ctx = document.getElementById('chartCategories').getContext('2d');
     const sums = {};
     state.categories.forEach(c=>sums[c.name]=0);
@@ -92,7 +91,7 @@
     if(chartCat) chartCat.destroy();
     chartCat = new Chart(ctx, { type:'doughnut', data:{labels, datasets:[{data}]}, options:{plugins:{legend:{position:'bottom'}}} });
 
-    // trend
+
     const ctx2 = document.getElementById('chartTrend').getContext('2d');
     const days = 30; const labels2 = []; const values2 = Array(days).fill(0);
     for(let i=days-1;i>=0;i--){ const d=new Date(); d.setDate(d.getDate()-i); labels2.push(d.toLocaleDateString()); }
@@ -101,20 +100,19 @@
     chartTrend = new Chart(ctx2,{type:'line',data:{labels:labels2,datasets:[{label:'Dépenses',data:values2,fill:true}]},options:{plugins:{legend:{display:false}}}});
   }
 
-  // --- CRUD local ---
+ 
   function addTransaction(tx){
     tx.id = 't' + Math.random().toString(36).slice(2,9);
     state.transactions.push(tx); saveState(); syncIfOnline(); renderApp();
   }
 
-  // --- Sync placeholder (fetch to API if available) ---
+
   async function syncIfOnline(){
-    // If an API exists we would POST new transactions. For demo we only log.
-    // Good place to implement conflict resolution.
+   
     if (!navigator.onLine) return;
   }
 
-  // --- Events ---
+
   function bind(){
     $('#btnAddTx').addEventListener('click', ()=>openModal());
     $('#empty-add').addEventListener('click', ()=>openModal());
@@ -134,15 +132,15 @@
     $('#btnToggleView').addEventListener('click', ()=>{ state.prefs.hideAmounts = !state.prefs.hideAmounts; saveState(); renderApp(); });
   }
 
-  // modal helpers
+
   function openModal(){ $('#modalTx').setAttribute('aria-hidden','false'); const today = new Date().toISOString().slice(0,10); $('#modalTx input[name=date]').value = today; }
   function closeModal(){ $('#modalTx').setAttribute('aria-hidden','true'); }
 
-  // main
+
   function renderApp(){ renderCategoriesSelect(); renderTransactions(); computeSummary(); renderCharts(); // hide amounts?
     if(state.prefs.hideAmounts) $all('.big-amount, .tx-item strong').forEach(el=>el && (el.textContent='•••'));
   }
 
-  // init
+ 
   loadState(); bind(); renderApp();
 })();
